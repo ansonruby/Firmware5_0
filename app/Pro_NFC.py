@@ -44,7 +44,7 @@ from lib.Fun_Tipo_NFC import *   #
 #-------------------------------------------------------
 # inicio de variable	--------------------------------------
 
-PN_Mensajes = 1     # 0: NO print  1: Print
+PN_Mensajes = 0     # 0: NO print  1: Print
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------
@@ -117,6 +117,7 @@ def Decision_General():
         else: Accion_Torniquete ('Error') # Qr no valido
     # ---------------------------------------------------------
     else: Accion_Torniquete ('Error') # no hay prioridad
+
 
 
 
@@ -233,6 +234,45 @@ def Decision_Counter(NFC, Tiempo_Actual):
     return -2
 
 
+
+#---------------------------------------------------------
+#----       Ruta para que autorise el servidor
+#---------------------------------------------------------
+def Decision_Server(Teclado, Tiempo_Actual):
+    global PN_Mensajes
+
+    if PN_Mensajes: print 'Autorisa el servidor'
+
+    Ruta            = Get_Rout_server()
+    ID_Dispositivo  = Get_ID_Dispositivo()
+    if PN_Mensajes: print 'Ruta:' + str(Ruta.strip()) + ', UUID:' + ID_Dispositivo
+    #Enviar_Teclado(IP,T_actual,ID,Rut)
+
+    Respuesta = Enviar_Teclado(Ruta.strip(), Tiempo_Actual, ID_Dispositivo, '6.'+Teclado)
+
+    if PN_Mensajes: print 'Respuesta: ' + str(Respuesta)
+
+    if Respuesta.find("Error") == -1:                           # Entradas/Salidas Autorizadas
+        Accion_Torniquete (Respuesta)
+        # verificar si hay registros del usuario
+        #Pos_linea = Buscar_Autorizados_ID_Tipo_1(QR)
+        #Guardar_Autorizacion_Tipo_1(QR, Tiempo_Actual, Pos_linea, Respuesta, '1') # status internet en 1
+        return 1                                                # funcionamiento con normalidad
+    elif Respuesta.find("Error :Access denied") != -1:          # Autorizaciones denegadas
+        Accion_Torniquete (Respuesta)
+        return 1
+    else :                                                      # Sin internet Momentanio o fallo del servidor
+        if PT_Mensajes: print 'Sin internet o Fallo del servidor'
+        return -1
+
+
+
+
+    #NOTAS
+    # return -2 #NO tiene tipo de qr valido
+    # return -1 #sin internet o fallo del servidor
+    # return 1  # respuesta del servidor valida
+    return -2
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------

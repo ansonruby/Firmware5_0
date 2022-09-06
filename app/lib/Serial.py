@@ -230,8 +230,8 @@ def Decision_Tag(Tag):
 #---------------------------------------------------------------------------------------
 
 def Activar_Tag():
-    #Set_File(STATUS_NFC, '1')    #Escrivir_Estados('1',8) # Cambiar estado del QR
-    Set_File(STATUS_TECLADO, '1')    #Escrivir_Estados('1',8) # Cambiar estado del QR
+    Set_File(STATUS_NFC, '1')    #Escrivir_Estados('1',8) # Cambiar estado del QR
+    #Set_File(STATUS_TECLADO, '1')    #Escrivir_Estados('1',8) # Cambiar estado del QR
 
 
 #---------------------------------------------------------------------------------------
@@ -244,8 +244,8 @@ def Guardar_Tag(Tag):
     TagG = TagG.replace ("TR:","")
     Clear_File(COM_NFC)          # Borrar QR
     Set_File(COM_NFC, TagG)       # Guardar QR
-    Clear_File(COM_TECLADO)          # Borrar QR
-    Set_File(COM_TECLADO, '6.' + TagG)       # Guardar QR
+    #Clear_File(COM_TECLADO)          # Borrar QR
+    #Set_File(COM_TECLADO, '6.' + TagG)       # Guardar QR
 
 
 
@@ -286,7 +286,7 @@ def Validar_Trama(x):
 
 #---------------------------------------------------------------------------------------
 def Almacenar_Trama(x):
-    print 'Valido:' + x
+    #print 'Valido:' + x
 
     if 'TN:' in x:      Decision_Tag(x)#print 'tag'
     elif 'TR:' in x:    Decision_Tag(x)#print 'tag'
@@ -319,7 +319,7 @@ def Procesar_Datos(rcv):
 
 
             Valido = Validar_Trama(x)
-            print 'Valido:' + str(Valido)
+            #if SQ_Mensajes: print 'Valido:' + str(Valido)
             #if      Valido == 1:    print 'Valido:' + x
 
             if      Valido == 1:    Almacenar_Trama(x)#print 'Valido:' + x #print 'QR valido' #Decision_Qr(x)          #QR valido
@@ -382,6 +382,7 @@ def Datos_Serial():
 
 if SQ_Mensajes: print 'Activo mensajes: ' + str(SQ_Mensajes)
 if SQ_Mensajes: print Puerto_Serial
+print 'Listo'
 #-------------------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------------------------------
 
