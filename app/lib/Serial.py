@@ -45,6 +45,12 @@ SQ_Mensajes = 0    # 0: NO print  1: Print
 Puerto_Serial = '/dev/ttyUSB0' #'/dev/ttyS0'
 port = serial.Serial(Puerto_Serial, baudrate=9600, timeout=1)
 
+TAG_NFC =''              # guardado de qr valido
+TAG_NFC_antes =''        # QR anterior
+T_Nuev_TAG = 0
+T_Repe_TAG = 0
+T_Maximo_TAG = 7
+
 QR =''              # guardado de qr valido
 QR_antes =''        # QR anterior
 Init_QR = ''        # parte inicial de un qr
@@ -213,15 +219,47 @@ def Activar_Telado():
 
 def Decision_Tag(Tag):
 
-    if 'TN:' in Tag:
-        if SQ_Mensajes: print 'TN:'+ Tag
-        Guardar_Tag(Tag)
-        Activar_Tag()
-    elif 'TR:' in Tag:
-        if SQ_Mensajes: print 'TR:'+ Tag
-        #Set_File(STATUS_REPEAT_NFC, '2')    # Estado QR repetido
-        Guardar_Tag(Tag)
-        Activar_Tag()
+    global TAG_NFC
+    global TAG_NFC_antes
+    global T_Nuev_TAG, T_Repe_TAG, T_Maximo_TAG
+
+    TAG_NFC = Tag
+    if TAG_NFC != TAG_NFC_antes:
+        TAG_NFC_antes = TAG_NFC
+        if 'TN:' in TAG_NFC:
+            if SQ_Mensajes: print 'TN:'+ TAG_NFC
+            Guardar_Tag(TAG_NFC)
+            Activar_Tag()
+        elif 'TR:' in TAG_NFC:
+            if SQ_Mensajes: print 'TR:'+ TAG_NFC
+            #Set_File(STATUS_REPEAT_NFC, '2')    # Estado QR repetido
+            Guardar_Tag(TAG_NFC)
+            Activar_Tag()
+    else:
+        #T_Nuev_TAG, T_Repe_TAG, T_Maximo_TAG
+        T_Repe_TAG = time.time()
+        T_transcurido = int(T_Repe_TAG-T_Nuev_TAG)
+        #print 'T_Diferencia: ' + str(T_transcurido)
+        if T_transcurido >= T_Maximo_TAG :
+            T_Nuev_TAG = T_Repe_TAG = time.time()
+            if 'TN:' in TAG_NFC:
+                if SQ_Mensajes: print 'TN:'+ TAG_NFC
+                Guardar_Tag(TAG_NFC)
+                Activar_Tag()
+
+            elif 'TR:' in TAG_NFC:
+                if SQ_Mensajes: print 'TR:'+ TAG_NFC
+                #Set_File(STATUS_REPEAT_NFC, '2')    # Estado QR repetido
+                Guardar_Tag(TAG_NFC)
+                Activar_Tag()
+
+        else:
+            Set_File(COM_BUZZER,'1')       #sonido eliminar si no es necesario
+            if SQ_Mensajes: print 'Repetido'
+            Set_File(STATUS_REPEAT_QR, '2')    # Estado QR repetido
+
+
+
 
 
 
