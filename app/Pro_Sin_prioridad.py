@@ -71,72 +71,93 @@ def Filtro_Caracteres(s): # eliminar los caracteres y estructura Jason
     return s
 #-------------------------------------------------------
 def add_Tipos_Usuarios_Nuevos(Usuario):
+	puntos = Usuario.count(".")
+	# print 'Puntas_separacion: ' + str(puntos)
+	# -----------------------------------------------------------------------------------------
+	#           Formato 1 :         azAZ09. azAZ09                  -> sha256.id  si exite el ID entra
+	# -----------------------------------------------------------------------------------------
+	if puntos == 1:
+		# print '-----Formato 1: azAZ09. azAZ09 '
+		Add_File(TAB_USER_TIPO_1, Usuario+'\n')
+		Add_File(TAB_USER_TIPO_2, Usuario+'\n')
+		Add_File(TAB_USER_TIPO_2_1, Usuario+'\n')
+		# print 'Nuevo'
+		# -----------------------------------------------------------------------------------------
+		#           Formato 3 :         09. azAZ09. azAZ09. azAZ09. 09  -> tipo.id.id.id.tiempo init.   tiken un solo uso
+		# -----------------------------------------------------------------------------------------
+		# -----------------------------------------------------------------------------------------
+		#           Formato 2.1 :       azAZ09. azAZ09. 09. 09          -> sha256.id.tiempo init.tiempo fin.
+		# -----------------------------------------------------------------------------------------
+	elif puntos == 2: # revizar tipo 6 en definicion
+		# print '-----Formato 2_1: azAZ09. azAZ09. 09. 09'
+		s2 = Usuario.split(".")
+		if s2[0] == '6':
+			ID = s2[1] + '.' + s2[2]
+			Add_File(TAB_USER_TIPO_6, ID+'\n')
 
-    puntos = Usuario.count(".")
+	elif puntos == 4:
+		# print '-----Formato 2_1: azAZ09. azAZ09. 09. 09'
 
-    # print 'Puntas_separacion: ' + str(puntos)
-    # -----------------------------------------------------------------------------------------
-    #           Formato 1 :         azAZ09. azAZ09                  -> sha256.id  si exite el ID entra
-    # -----------------------------------------------------------------------------------------
+		s2 = Usuario.split(".")
+		if s2[0] == '3':
+			ID = s2[1] + '.' + s2[2] + '.' + s2[3] + '.' + s2[4]
+			Add_File(TAB_USER_TIPO_3, ID+'\n')
+			# add_New_Tikecket(Usuario)
+		else:
+			if PSP_Mensajes: print '-----Formato : no definido'
 
-    if puntos == 1:
-        # print '-----Formato 1: azAZ09. azAZ09 '
-        Add_File(TAB_USER_TIPO_1, Usuario+'\n')
-        Add_File(TAB_USER_TIPO_2, Usuario+'\n')
-        Add_File(TAB_USER_TIPO_2_1, Usuario+'\n')
-        # print 'Nuevo'
-
-        # -----------------------------------------------------------------------------------------
-        #           Formato 3 :         09. azAZ09. azAZ09. azAZ09. 09  -> tipo.id.id.id.tiempo init.   tiken un solo uso
-        # -----------------------------------------------------------------------------------------
-        """
-        elif puntos == 4:
-            # print '-----Formato 2_1: azAZ09. azAZ09. 09. 09'
-            s2 = Usuario.split(".")
-            ID = s2[1] + '.' + s2[2] + '.' + s2[3] + '.' + s2[4]
-            Add_File(TAB_USER_TIPO_3, ID+'\n')
-            # add_New_Tikecket(Usuario)
-        """
-    else:
-        if PSP_Mensajes: print '-----Formato : no definido'
 #-------------------------------------------------------
 def Actualizar_Usuarios_Desde_server():
-    global PSP_Mensajes
-    Tiempo_Actual = str(int(time.time()*1000.0))  # Tiempo()
-    Ruta            = Get_Rout_server()
-    ID_Dispositivo  = Get_ID_Dispositivo()
+	global PSP_Mensajes
+	Tiempo_Actual = str(int(time.time()*1000.0))  # Tiempo()
+	Ruta            = Get_Rout_server()
+	ID_Dispositivo  = Get_ID_Dispositivo()
 
-    if PSP_Mensajes: print 'Ruta:' + str(Ruta.strip()) + ', UUID:' + ID_Dispositivo
+	if PSP_Mensajes: print 'Ruta:' + str(Ruta.strip()) + ', UUID:' + ID_Dispositivo
 
-    Respuesta = Pedir_Usuarios_Activos(Ruta.strip(),Tiempo_Actual,ID_Dispositivo)
+	Respuesta = Pedir_Usuarios_Activos(Ruta.strip(),Tiempo_Actual,ID_Dispositivo)
 
-    #if PSP_Mensajes: print Respuesta
+	#if PSP_Mensajes: print Respuesta
 
-    if Respuesta.find("Error") == -1:
-        Usuarios= Filtro_Caracteres (Respuesta)
-        #if PSP_Mensajes: print Usuarios
+	if Respuesta.find("Error") == -1:
+		Usuarios= Filtro_Caracteres (Respuesta)
+		if PSP_Mensajes: print Usuarios
 
-        Usuarios = Usuarios.split("\r\n")
-        #solo llegan los tipo 1 por server por el moento desavilitado tipo 3
-        Clear_File(TAB_USER_TIPO_1)
-        Clear_File(TAB_USER_TIPO_2)
-        Clear_File(TAB_USER_TIPO_2_1)
-        #Clear_File(TAB_USER_TIPO_3)
+		Usuarios = Usuarios.split("\r\n")
+		#solo llegan los tipo 1 por server por el moento desavilitado tipo 3
+		#Clear_File(TAB_USER_TIPO_1)
+		#Clear_File(TAB_USER_TIPO_2)
+		#Clear_File(TAB_USER_TIPO_2_1)
+		#Clear_File(TAB_USER_TIPO_3)
 
-        for Usuario in Usuarios:
-            #print Usuario
-            if len(Usuario) > 0:
-                #print Usuario
-                add_Tipos_Usuarios_Nuevos(Usuario)
+		Clear_File(TAB_USER_TIPO_1)
+		Clear_File(TAB_AUTO_TIPO_1)
+		Clear_File(TAB_PINES_TIPO_1)
+		Clear_File(TAB_USER_TIPO_2)
+		Clear_File(TAB_AUTO_TIPO_2)
+		Clear_File(TAB_USER_TIPO_2_1)
+		Clear_File(TAB_AUTO_TIPO_2_1)
+		Clear_File(TAB_USER_TIPO_3)
+		Clear_File(TAB_AUTO_TIPO_3)
+		Clear_File(TAB_USER_TIPO_6)
+		Clear_File(TAB_AUTO_TIPO_6)
 
-        return 1
+		for Usuario in Usuarios:
+			#print Usuario
+			if len(Usuario) > 0:
+				#print Usuario
+				add_Tipos_Usuarios_Nuevos(Usuario)
 
-    else: return -1
+		return 1
+
+	else: return -1
+
 #-------------------------------------------------------
 def Intentos_Actualizar_Usuarios(Cantidad):
 	global PSP_Mensajes
-	Prioridad = Get_File(CONF_AUTORIZACION_QR)
+	Prioridad = Get_File(CONF_AUTORIZACION_QR).strip()
 	if Prioridad == '0' or Prioridad == '3':
+
 		Set_File(COM_LED, '8')
 		for Intentos in range(Cantidad):
 			if PSP_Mensajes:    print 'Intento '+str(Intentos)+', Actualizar usuarios'

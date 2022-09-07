@@ -262,7 +262,7 @@ def Decision_Server(Teclado, Tiempo_Actual):
         Accion_Torniquete (Respuesta)
         return 1
     else :                                                      # Sin internet Momentanio o fallo del servidor
-        if PT_Mensajes: print 'Sin internet o Fallo del servidor'
+        if PN_Mensajes: print 'Sin internet o Fallo del servidor'
         return -1
 
 
