@@ -14,7 +14,7 @@ Libreria personal para el manejo del serson lector qr por serial.
 
 
 
-
+dmesg | grep tty
 
 """
 #---------------------------------------------------------------------------------------
@@ -41,9 +41,19 @@ from Lib_Rout import *  # importar con los mismos nombres
 #-----------------------------------------------------------
 
 SQ_Mensajes = 0    # 0: NO print  1: Print
+port = 0
+Puerto_Serial = '/dev/ttyUSB' #'/dev/ttyS0'
+fruits = ["0", "1", "2", "3", "4"]
 
-Puerto_Serial = '/dev/ttyUSB0' #'/dev/ttyS0'
-port = serial.Serial(Puerto_Serial, baudrate=9600, timeout=1)
+for x in fruits:
+    print(x)
+    try :
+        port = serial.Serial(Puerto_Serial+x, baudrate=9600, timeout=1)
+        break;
+    except SerialException:
+        print 'error'
+
+
 
 TAG_NFC =''              # guardado de qr valido
 TAG_NFC_antes =''        # QR anterior
@@ -254,7 +264,7 @@ def Decision_Tag(Tag):
                 Activar_Tag()
 
         else:
-            Set_File(COM_BUZZER,'1')       #sonido eliminar si no es necesario
+            #Set_File(COM_BUZZER,'1')       #sonido eliminar si no es necesario
             if SQ_Mensajes: print 'Repetido'
             Set_File(STATUS_REPEAT_QR, '2')    # Estado QR repetido
 
@@ -390,9 +400,14 @@ def Datos_Serial():
 
 
         except SerialException:
-            while True:
-                port = serial.Serial(Puerto_Serial, baudrate=9600, timeout=1)
-                break
+            for x in fruits:
+                print(x)
+                try :
+                    port = serial.Serial(Puerto_Serial+x, baudrate=9600, timeout=1)
+                    break;
+                except SerialException:
+                    print 'error'
+
 #---------------------------------------------------------------------------------------
 
 
